@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calculadora Raid Pro</title>
+    <style>
+        :root {
+            --primary: #ff4d4d; /* C4 */
+            --secondary: #ffcc00; /* Pólvora */
+            --tertiary: #4db8ff; /* Explosivos */
+            --fuel: #ff8c00; /* Combustible */
+            --bg: #121212;
+            --card-bg: #1e1e1e;
+            --text: #e0e0e0;
+        }
+
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .card {
+            background-color: var(--card-bg);
+            padding: 1.5rem;
+            border-radius: 16px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.8);
+            width: 100%;
+            max-width: 450px;
+            border: 1px solid #333;
+        }
+
+        .tabs {
+            display: flex;
+            overflow-x: auto;
+            gap: 8px;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #333;
+            padding-bottom: 10px;
+            scrollbar-width: none;
+        }
+
+        .tab-btn {
+            background: none;
+            border: none;
+            color: #777;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 0.75rem;
+            white-space: nowrap;
+            transition: 0.3s;
+            padding: 8px 10px;
+            text-transform: uppercase;
+        }
+
+        .tab-btn.active { color: white; }
+
+        .tab-btn[data-target="polvora"].active { border-bottom: 3px solid var(--secondary); color: var(--secondary); }
+        .tab-btn[data-target="combustible"].active { border-bottom: 3px solid var(--fuel); color: var(--fuel); }
+        .tab-btn[data-target="explosivos"].active { border-bottom: 3px solid var(--tertiary); color: var(--tertiary); }
+        .tab-btn[data-target="c4"].active { border-bottom: 3px solid var(--primary); color: var(--primary); }
+
+        .content { display: none; }
+        .content.active { display: block; animation: fadeIn 0.3s ease; }
+
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+        .input-group { margin: 20px 0; text-align: center; }
+        
+        input {
+            width: 85%;
+            background: #2a2a2a;
+            color: white;
+            font-size: 28px;
+            font-weight: bold;
+            text-align: center;
+            border: 2px solid #444;
+            border-radius: 10px;
+            padding: 12px;
+            outline: none;
+        }
+
+        #inPolvora:focus { border-color: var(--secondary); }
+        #inFuel:focus { border-color: var(--fuel); }
+        #inExplo:focus { border-color: var(--tertiary); }
+        #inC4:focus { border-color: var(--primary); }
+
+        .resultado {
+            background: rgba(0, 0, 0, 0.4);
+            padding: 20px;
+            border-radius: 12px;
+        }
+
+        .item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+
+        .highlight { font-weight: 800; font-family: 'Courier New', monospace; font-size: 1.2rem; }
+        .color-p { color: var(--secondary); }
+        .color-f { color: var(--fuel); }
+        .color-e { color: var(--tertiary); }
+        .color-c4 { color: var(--primary); }
+
+        hr { border: 0; border-top: 1px solid #444; margin: 15px 0; }
+    </style>
+</head>
+<body>
+
+<div class="card">
+    <div class="tabs">
+        <button class="tab-btn active" data-target="polvora">Pólvora</button>
+        <button class="tab-btn" data-target="combustible">Combustible</button>
+        <button class="tab-btn" data-target="explosivos">Explosivos</button>
+        <button class="tab-btn" data-target="c4">C4</button>
+    </div>
+
+    <div id="polvora" class="content active">
+        <div class="input-group">
+            <label style="display:block; margin-bottom:10px;">CANTIDAD DE PÓLVORA</label>
+            <input type="number" id="inPolvora" value="1" min="0">
+        </div>
+        <div class="resultado" style="border-left: 4px solid var(--secondary);">
+            <div class="item"><span>📦 Pólvora Total:</span> <span id="outPolvora" class="highlight color-p">10</span></div>
+            <hr>
+            <div class="item"><span>🔥 Carbón:</span> <span id="outCarbon" class="highlight color-p">15</span></div>
+            <div class="item"><span>💛 Sulfuro:</span> <span id="outSulfuro" class="highlight color-p">10</span></div>
+        </div>
+    </div>
+
+    <div id="combustible" class="content">
+        <div class="input-group">
+            <label style="display:block; margin-bottom:10px;">CANTIDAD DE COMBUSTIBLE</label>
+            <input type="number" id="inFuel" value="1" min="0">
+        </div>
+        <div class="resultado" style="border-left: 4px solid var(--fuel);">
+            <div class="item"><span>⛽ Combustible Total:</span> <span id="outFuelTotal" class="highlight color-f">1</span></div>
+            <hr>
+            <div class="item"><span>🥩 Grasa Animal:</span> <span id="outFuelFat" class="highlight color-f">2</span></div>
+            <div class="item"><span>🧵 Tela:</span> <span id="outFuelCloth" class="highlight color-f">1</span></div>
+        </div>
+    </div>
+
+    <div id="explosivos" class="content">
+        <div class="input-group">
+            <label style="display:block; margin-bottom:10px;">CANTIDAD DE EXPLOSIVOS</label>
+            <input type="number" id="inExplo" value="1" min="0">
+        </div>
+        <div class="resultado" style="border-left: 4px solid var(--tertiary);">
+            <div class="item"><span>🧨 Explosivo Final:</span> <span id="outExploTotal" class="highlight color-e">1</span></div>
+            <hr>
+            <div class="item"><span>💨 Pólvora:</span> <span id="outExploPolvora" class="highlight color-e">20</span></div>
+            <div class="item"><span>⛽ Combustible:</span> <span id="outExploFuel" class="highlight color-e">2</span></div>
+            <div class="item"><span>🔩 Fragmentos:</span> <span id="outExploMetal" class="highlight color-e">6</span></div>
+        </div>
+    </div>
+
+    <div id="c4" class="content">
+        <div class="input-group">
+            <label style="display:block; margin-bottom:10px;">CANTIDAD DE C4</label>
+            <input type="number" id="inC4" value="1" min="0">
+        </div>
+        <div class="resultado" style="border-left: 4px solid var(--primary);">
+            <div class="item"><span>💣 C4 Final:</span> <span id="outC4Total" class="highlight color-c4">1</span></div>
+            <hr>
+            <div class="item"><span>💨 Pólvora:</span> <span id="outC4Polvora" class="highlight color-c4">200</span></div>
+            <div class="item"><span>🧵 Tela:</span> <span id="outC4Tela" class="highlight color-c4">15</span></div>
+            <div class="item"><span>🧨 Explosivos:</span> <span id="outC4Explo" class="highlight color-c4">5</span></div>
+            <div class="item"><span>📟 Basura Tech:</span> <span id="outC4Tech" class="highlight color-c4">4</span></div>
+        </div>
+    </div>
+</div>
+
+<script>
+    const tabs = document.querySelectorAll('.tab-btn');
+    const contents = document.querySelectorAll('.content');
+    const fmt = n => Math.max(0, n).toLocaleString();
+
+    tabs.forEach(tab => {
+        tab.addEventListener('click', () => {
+            tabs.forEach(t => t.classList.remove('active'));
+            contents.forEach(c => c.classList.remove('active'));
+            tab.classList.add('active');
+            document.getElementById(tab.dataset.target).classList.add('active');
+        });
+    });
+
+    // Pólvora
+    document.getElementById('inPolvora').addEventListener('input', (e) => {
+        let n = parseInt(e.target.value) || 0;
+        document.getElementById('outPolvora').innerText = fmt(n * 10);
+        document.getElementById('outCarbon').innerText = fmt(n * 15);
+        document.getElementById('outSulfuro').innerText = fmt(n * 10);
+    });
+
+    // Combustible
+    document.getElementById('inFuel').addEventListener('input', (e) => {
+        let n = parseInt(e.target.value) || 0;
+        document.getElementById('outFuelTotal').innerText = fmt(n);
+        document.getElementById('outFuelFat').innerText = fmt(n * 2);
+        document.getElementById('outFuelCloth').innerText = fmt(n * 1);
+    });
+
+    // Explosivos
+    document.getElementById('inExplo').addEventListener('input', (e) => {
+        let n = parseInt(e.target.value) || 0;
+        document.getElementById('outExploTotal').innerText = fmt(n);
+        document.getElementById('outExploPolvora').innerText = fmt(n * 20);
+        document.getElementById('outExploFuel').innerText = fmt(n * 2);
+        document.getElementById('outExploMetal').innerText = fmt(n * 6);
+    });
+
+    // C4
+    document.getElementById('inC4').addEventListener('input', (e) => {
+        let n = parseInt(e.target.value) || 0;
+        document.getElementById('outC4Total').innerText = fmt(n);
+        document.getElementById('outC4Polvora').innerText = fmt(n * 200);
+        document.getElementById('outC4Tela').innerText = fmt(n * 15);
+        document.getElementById('outC4Explo').innerText = fmt(n * 5);
+        document.getElementById('outC4Tech').innerText = fmt(n * 4);
+    });
+</script>
+
+</body>
+</html>
